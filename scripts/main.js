@@ -105,6 +105,7 @@ const gameController = function(){
         }
 
         event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
+        event.currentTarget.removeEventListener("click", startGame);
     }
 
     /* EXECUTING */
