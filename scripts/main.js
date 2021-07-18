@@ -1,14 +1,3 @@
-/* 
-    Pseudocode
-
-
-
-*/
-
-/* DOM VARIABLES */
-const gameSpots = document.querySelectorAll(".gameSpot");
-
-
 
 const playerFactory = (number, mark) => {
     if ((number === 1 || number === 2) && (mark === "O" || mark === "X")) {
@@ -37,6 +26,8 @@ const gameBoard = function(){
 const gameController = function(){
     "use strict";
 
+    const gameSpots = document.querySelectorAll(".gameSpot");
+
     let player1 = "";
 
     let player2 = "";
@@ -53,7 +44,40 @@ const gameController = function(){
         }
     }
 
+    function winOrLose(player){
+        let winArray = [
+            /* Horizontal */
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        
+            /* Vertical */
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+
+            /* Diagonal */
+            [0, 4, 8],
+            [6, 4, 2],
+        ]
+
+        for(let i = 0; i < winArray.length; i++){
+            let counter = 0;
+            for(let j = 0; j < winArray[i].length; j++){
+                if(gameBoard.gameboardArray[winArray[i][j]] === player.getMark()) counter++;
+                if(counter === 3) return true;
+                if(j === 2) counter = 0;
+            }
+        };
+    }
+
+    function endGame(player){
+        alert(`Player ${player.getNumber()} wins!`);
+        gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
+    }
+
     function startGame(event){
+        // do it with playRecorder
         let verifyArray = 0;
         for(let i = 0; i < gameBoard.gameboardArray.length; i++){
             if(gameBoard.gameboardArray[i]){
@@ -64,23 +88,32 @@ const gameController = function(){
 
         if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
             gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){
+            
             gameBoard.gameboardArray[event.currentTarget.id] = player1.getMark();
             gameBoard.playRecorder.push(player1.getMark());
+            
+            if(gameBoard.playRecorder.length >= 3 && winOrLose(player1)){
+                endGame(player1);
+            }
         } else {
             gameBoard.gameboardArray[event.currentTarget.id] = player2.getMark();
             gameBoard.playRecorder.push(player2.getMark());
+
+            if((gameBoard.playRecorder.length >= 3) && winOrLose(player2)){
+                endGame(player2);
+            }
         }
 
         event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
-        console.log(gameBoard.gameboardArray);
     }
+
+    /* EXECUTING */
+
+    definePlayers();
+
+    gameSpots.forEach(gameSpot => {gameSpot.addEventListener("click", startGame)});
 
     return {
-        definePlayers,
-        startGame
+        
     }
 }();
-
-gameController.definePlayers();
-
-gameSpots.forEach(gameSpot => {gameSpot.addEventListener("click", gameController.startGame)})
