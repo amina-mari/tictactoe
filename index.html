@@ -8,23 +8,45 @@
     <link rel="stylesheet" href="/styles/main.css">
 </head>
 <body>
-    <div>
-        <div class="divGroup">
-            <div class="gameSpot" id="0"></div>
-            <div class="gameSpot" id="1"></div>
-            <div class="gameSpot" id="2"></div>
-        </div>
-        <div class="divGroup">
-            <div class="gameSpot" id="3"></div>
-            <div class="gameSpot" id="4"></div>
-            <div class="gameSpot" id="5"></div>
-        </div>
-        <div class="divGroup">
-            <div class="gameSpot" id="6"></div>
-            <div class="gameSpot" id="7"></div>
-            <div class="gameSpot" id="8"></div>
-        </div>
+    <h2>Jogo da Velha</h2>
+    <form action="">
+        <label for="p1Name">Player 1 Name:</label>
+        <input id="p1Name" type="text">
+        <fieldset>
+            <legend>Player 1 Mark:</legend>
+            <input type="radio" id="p1MarkX" name="p1Mark"> <label for="p1MarkX">X</label>
+            <input type="radio" id="p1MarkO" name="p1Mark"> <label for="p1MarkO">O</label>
+        </fieldset>
+        
+        <label for="p2Name">Player 2 Name:</label>
+        <input id="p2Name" type="text">
+
+        <button id="buttonStart">Start Game!</button>
+    </form>
+
+    <div class="result">
+        <p id="resultPara">Player <span id="resultWinner"></span> Wins!</p>
+        Congratulations!
+        <button id="buttonClose">Close</button>
     </div>
+
+    <table>
+        <tr>
+            <td class="gameSpot" id="0"></td>
+            <td class="gameSpot" id="1"></td>
+            <td class="gameSpot" id="2"></td>
+        </tr>
+        <tr>
+            <td class="gameSpot" id="3"></td>
+            <td class="gameSpot" id="4"></td>
+            <td class="gameSpot" id="5"></td>
+        </tr>
+        <tr>
+            <td class="gameSpot" id="6"></td>
+            <td class="gameSpot" id="7"></td>
+            <td class="gameSpot" id="8"></td>
+        </tr>
+    </table>
     <script src="/scripts/main.js"></script>
 </body>
 </html>

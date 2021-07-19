@@ -1,11 +1,15 @@
 
-const playerFactory = (number, mark) => {
-    if ((number === 1 || number === 2) && (mark === "O" || mark === "X")) {
+const playerFactory = (number, mark, name) => {
+    if ((number === 1 || number === 2) 
+    &&  (mark === "O" || mark === "X")
+    &&   name) {
         const getNumber = () => number;
 
         const getMark = () => mark;
 
-        return {getNumber, getMark};
+        const getName = () => name;
+
+        return {getNumber, getMark, getName};
     }
     else return "Invalid Number or Mark";
 };
@@ -27,21 +31,65 @@ const gameController = function(){
     "use strict";
 
     const gameSpots = document.querySelectorAll(".gameSpot");
+    const resultDiv = document.querySelector(".result");
+    const resultPara = document.getElementById("resultPara");
+    const resultWinner = document.getElementById("resultWinner");
+    const buttonClose = document.getElementById("buttonClose");
+    const buttonStart = document.getElementById("buttonStart");
+    const p1NameInput = document.getElementById("p1Name");
+    const p2NameInput = document.getElementById("p2Name");
+    const p1MarkX = document.getElementById("p1MarkX");
+    const p1MarkO = document.getElementById("p1MarkO");
 
     let player1 = "";
 
     let player2 = "";
     
-    function definePlayers(){
-        alert("Welcome to the Amina's Tic Tac Toe!")
-        let markConfirm = confirm("Player 1 would like to play with the mark 'X'?");
-        if(markConfirm){
-            player1 = playerFactory(1, "X");
-            player2 = playerFactory(2, "O");
+    function verifyInputs(){
+        if(p1NameInput.value 
+        && p2NameInput.value 
+        && (p1MarkX.checked || p1MarkO.checked)){
+            const p1NameTrimmed = p1NameInput.value.trim();
+            const p2NameTrimmed = p2NameInput.value.trim();
+            const p1Mark = p1MarkX.checked ? 'X' : 'O';
+
+            return {p1NameTrimmed, p2NameTrimmed, p1Mark};
+        } else return false;
+    }
+
+    function clearInputs(){
+        p1NameInput.value = "";
+        p2NameInput.value = "";
+        p1MarkO.checked = false;
+        p1MarkX.checked = false;
+    }
+
+    function clearBoard(){
+        gameSpots.forEach(gameSpot => {gameSpot.textContent = ""});
+    }
+
+    function definePlayers(obj){
+
+        if(obj.p1Mark === 'X'){
+            player1 = playerFactory(1, "X", obj.p1NameTrimmed);
+            player2 = playerFactory(2, "O", obj.p2NameTrimmed);
         } else {
-            player1 = playerFactory(1, "O");
-            player2 = playerFactory(2, "X");
+            player1 = playerFactory(1, "O", obj.p1NameTrimmed);
+            player2 = playerFactory(2, "X", obj.p2NameTrimmed);
         }
+    }
+
+    function markBoard(player){
+        gameBoard.gameboardArray[event.currentTarget.id] = player.getMark();
+        gameBoard.playRecorder.push(player.getMark());
+        event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
+
+        if((gameBoard.playRecorder.length >= 3) && winOrLose(player)){
+            winGame(player);
+            return;
+        }
+
+        if(gameBoard.playRecorder.length === 9) drawGame();
     }
 
     function winOrLose(player){
@@ -71,9 +119,21 @@ const gameController = function(){
         };
     }
 
-    function endGame(player){
-        alert(`Player ${player.getNumber()} wins!`);
+    function winGame(player){
+        resultPara.textContent = `Player ${player.getName()} win!`
+        resultDiv.style.display = "flex";
         gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
+        gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
+        gameBoard.playRecorder = [];
+    }
+
+    function drawGame(){
+        resultDiv.textContent = "";
+        resultWinner.textContent = "It's a Draw!";
+        resultDiv.style.display = "flex";
+        gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
+        gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
+        gameBoard.playRecorder = [];
     }
 
     function startGame(event){
@@ -88,31 +148,32 @@ const gameController = function(){
 
         if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
             gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){
-            
-            gameBoard.gameboardArray[event.currentTarget.id] = player1.getMark();
-            gameBoard.playRecorder.push(player1.getMark());
-            
-            if(gameBoard.playRecorder.length >= 3 && winOrLose(player1)){
-                endGame(player1);
-            }
+            markBoard(player1);
         } else {
-            gameBoard.gameboardArray[event.currentTarget.id] = player2.getMark();
-            gameBoard.playRecorder.push(player2.getMark());
-
-            if((gameBoard.playRecorder.length >= 3) && winOrLose(player2)){
-                endGame(player2);
-            }
+            markBoard(player2);
         }
 
-        event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
         event.currentTarget.removeEventListener("click", startGame);
     }
 
     /* EXECUTING */
 
-    definePlayers();
+    buttonStart.addEventListener("click", function(event){
+        event.preventDefault();
+        if(verifyInputs()){
+            buttonStart.textContent = "Restart Game";
 
-    gameSpots.forEach(gameSpot => {gameSpot.addEventListener("click", startGame)});
+            const playerInfo = verifyInputs();
+            definePlayers(playerInfo);
+            clearInputs();
+            clearBoard();
+            gameSpots.forEach(gameSpot => {gameSpot.addEventListener("click", startGame)});
+        } else return;
+    });
+
+    buttonClose.addEventListener("click", function(){
+        resultDiv.style.display = "none";
+    })
 
     return {
         
