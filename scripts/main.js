@@ -33,7 +33,7 @@ const gameController = function(){
     const gameSpots = document.querySelectorAll(".gameSpot");
     const resultDiv = document.querySelector(".result");
     const resultPara = document.getElementById("resultPara");
-    const resultWinner = document.getElementById("resultWinner");
+    const congratsPara = document.getElementById("congratulations");
     const buttonClose = document.getElementById("buttonClose");
     const buttonStart = document.getElementById("buttonStart");
     const p1NameInput = document.getElementById("p1Name");
@@ -120,7 +120,8 @@ const gameController = function(){
     }
 
     function winGame(player){
-        resultPara.textContent = `Player ${player.getName()} win!`
+        resultPara.innerHTML = `Player <span>${player.getName()}</span> win!`;
+        congratsPara.textContent = "Congratulations!"
         resultDiv.style.display = "flex";
         gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
         gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
@@ -128,8 +129,9 @@ const gameController = function(){
     }
 
     function drawGame(){
-        resultDiv.textContent = "";
-        resultWinner.textContent = "It's a Draw!";
+        // resultDiv.textContent = "";
+        resultPara.textContent = `It's a draw!`;
+        congratsPara.textContent = "";
         resultDiv.style.display = "flex";
         gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
         gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
@@ -149,8 +151,10 @@ const gameController = function(){
         if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
             gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){
             markBoard(player1);
+            console.log(gameBoard.playRecorder);
         } else {
             markBoard(player2);
+            console.log(gameBoard.playRecorder);
         }
 
         event.currentTarget.removeEventListener("click", startGame);
