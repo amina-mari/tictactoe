@@ -1,6 +1,6 @@
 
 const playerFactory = (number, mark, name) => {
-    if ((number === 1 || number === 2) 
+    if ((number === 1 || number === 2 || number === 3) 
     &&  (mark === "O" || mark === "X")
     &&   name) {
         const getNumber = () => number;
@@ -40,6 +40,9 @@ const gameController = function(){
     const p2NameInput = document.getElementById("p2Name");
     const p1MarkX = document.getElementById("p1MarkX");
     const p1MarkO = document.getElementById("p1MarkO");
+    const cpuOptionYes = document.getElementById("cpuOptionYes");
+    const cpuOptionNo = document.getElementById("cpuOptionNo");
+    const divPlayer2 = document.querySelector(".divPlayer2");
 
     let player1 = "";
 
@@ -47,13 +50,18 @@ const gameController = function(){
     
     function verifyInputs(){
         if(p1NameInput.value 
-        && p2NameInput.value 
-        && (p1MarkX.checked || p1MarkO.checked)){
+        && (p1MarkX.checked || p1MarkO.checked)
+        && (cpuOptionYes.checked || cpuOptionNo.checked)){
+            const computerPlayer = cpuOptionYes.checked ? true : false;
             const p1NameTrimmed = p1NameInput.value.trim();
-            const p2NameTrimmed = p2NameInput.value.trim();
             const p1Mark = p1MarkX.checked ? 'X' : 'O';
-
-            return {p1NameTrimmed, p2NameTrimmed, p1Mark};
+            
+            if(!computerPlayer && p2NameInput.value){
+                const p2NameTrimmed = p2NameInput.value.trim();
+                return {p1NameTrimmed, p2NameTrimmed, p1Mark, computerPlayer};
+            } 
+            else if(computerPlayer) return {p1NameTrimmed, p1Mark, computerPlayer};
+            else return false;
         } else return false;
     }
 
@@ -62,34 +70,91 @@ const gameController = function(){
         p2NameInput.value = "";
         p1MarkO.checked = false;
         p1MarkX.checked = false;
+        cpuOptionNo.checked = false;
+        cpuOptionYes.checked = false;
     }
 
     function clearBoard(){
         gameSpots.forEach(gameSpot => {gameSpot.textContent = ""});
+        gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
+        gameBoard.playRecorder = [];
     }
 
     function definePlayers(obj){
-
-        if(obj.p1Mark === 'X'){
-            player1 = playerFactory(1, "X", obj.p1NameTrimmed);
-            player2 = playerFactory(2, "O", obj.p2NameTrimmed);
+        if(obj.computerPlayer){
+            if(obj.p1Mark === 'X'){
+                player1 = playerFactory(1, "X", obj.p1NameTrimmed);
+                player2 = playerFactory(3, "O", "Computer");
+            } else {
+                player1 = playerFactory(1, "O", obj.p1NameTrimmed);
+                player2 = playerFactory(3, "X", "Computer");
+            }
         } else {
-            player1 = playerFactory(1, "O", obj.p1NameTrimmed);
-            player2 = playerFactory(2, "X", obj.p2NameTrimmed);
+            if(obj.p1Mark === 'X'){
+                player1 = playerFactory(1, "X", obj.p1NameTrimmed);
+                player2 = playerFactory(2, "O", obj.p2NameTrimmed);
+            } else {
+                player1 = playerFactory(1, "O", obj.p1NameTrimmed);
+                player2 = playerFactory(2, "X", obj.p2NameTrimmed);
+            }
+        }
+    }
+
+    function getRandomSpot(){
+        let randomSpot = Math.round(Math.random() * 9);
+        let availableSpots = [];
+        
+        for(let i = 0; i < gameBoard.gameboardArray.length; i++){
+            if(!(gameBoard.gameboardArray[i])) availableSpots.push(i);
+        };
+
+        console.log(availableSpots);
+
+        for(let i = 0; i < availableSpots.length; i++){
+            if(randomSpot === availableSpots[i]) {
+                console.log("inside the function: " + randomSpot);
+                return randomSpot;
+            }
+            
+            else if(i === availableSpots.length-1){
+                return getRandomSpot();
+            } 
         }
     }
 
     function markBoard(player){
-        gameBoard.gameboardArray[event.currentTarget.id] = player.getMark();
-        gameBoard.playRecorder.push(player.getMark());
-        event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
+        let gameEnded = false;
 
-        if((gameBoard.playRecorder.length >= 3) && winOrLose(player)){
-            winGame(player);
-            return;
+        if(player.getNumber() !== 3){
+            gameBoard.gameboardArray[event.currentTarget.id] = player.getMark();
+            gameBoard.playRecorder.push(player.getMark());
+            event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
+            event.currentTarget.removeEventListener("click", startGame);
+        } else {
+            const randomSpot = getRandomSpot();
+            console.log(randomSpot);
+            gameBoard.gameboardArray[randomSpot] = player.getMark();
+            gameBoard.playRecorder.push(player.getMark());
+            gameSpots.forEach(gameSpot => {
+                if(gameSpot.id == randomSpot) {
+                    gameSpot.textContent = gameBoard.gameboardArray[randomSpot];
+                    gameSpot.removeEventListener("click", startGame);
+                    console.log("Marked!");
+                }
+            });
         }
 
-        if(gameBoard.playRecorder.length === 9) drawGame();
+        if((gameBoard.playRecorder.length >= 3) && winOrLose(player)){
+            gameEnded = true;
+            winGame(player);
+            return gameEnded;
+        }
+
+        if(gameBoard.playRecorder.length === 9) {
+            gameEnded = true;
+            drawGame();
+            return gameEnded;
+        };
     }
 
     function winOrLose(player){
@@ -120,16 +185,18 @@ const gameController = function(){
     }
 
     function winGame(player){
-        resultPara.innerHTML = `Player <span>${player.getName()}</span> win!`;
-        congratsPara.textContent = "Congratulations!"
+        if(player.getNumber() !== 3){
+            resultPara.innerHTML = `Player ${player.getNumber()} (<span>${player.getName()}</span>) win!`;
+            congratsPara.textContent = "Congratulations!";
+        } else {
+            resultPara.innerHTML = `<span>${player.getName()}</span> win!`;
+        }
         resultDiv.style.display = "flex";
         gameSpots.forEach(gameSpot => {gameSpot.removeEventListener("click", startGame)})
-        gameBoard.gameboardArray = ["", "", "", "", "", "", "", "", ""];
-        gameBoard.playRecorder = [];
+        
     }
 
     function drawGame(){
-        // resultDiv.textContent = "";
         resultPara.textContent = `It's a draw!`;
         congratsPara.textContent = "";
         resultDiv.style.display = "flex";
@@ -148,19 +215,32 @@ const gameController = function(){
             }
         }
 
-        if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
+        if(player2.getNumber() === 3){
+            if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
             gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){
-            markBoard(player1);
-            console.log(gameBoard.playRecorder);
+                if(!(markBoard(player1))) markBoard(player2);
+            }
         } else {
-            markBoard(player2);
-            console.log(gameBoard.playRecorder);
+            if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
+            gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){ 
+                markBoard(player1);
+            } else {
+                markBoard(player2);
+            }
         }
+        
 
-        event.currentTarget.removeEventListener("click", startGame);
     }
 
     /* EXECUTING */
+
+    cpuOptionYes.addEventListener("click", function(){
+        divPlayer2.style.display = "none";
+    });
+
+    cpuOptionNo.addEventListener("click", function(){
+        divPlayer2.style.display = "block";
+    })
 
     buttonStart.addEventListener("click", function(event){
         event.preventDefault();
