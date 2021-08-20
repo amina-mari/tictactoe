@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+.divComputer {
+    display: none;
+}
+
+.divPlayer2 {
+    display: none;
+}
+
 .result {
     display: none;
     position: fixed;

@@ -1,6 +1,6 @@
 
 const playerFactory = (number, mark, name) => {
-    if ((number === 1 || number === 2 || number === 3) 
+    if ((number === 1 || number === 2 || number === 3 || number === 4) 
     &&  (mark === "O" || mark === "X")
     &&   name) {
         const getNumber = () => number;
@@ -43,6 +43,9 @@ const gameController = function(){
     const cpuOptionYes = document.getElementById("cpuOptionYes");
     const cpuOptionNo = document.getElementById("cpuOptionNo");
     const divPlayer2 = document.querySelector(".divPlayer2");
+    const cpuRandom = document.getElementById("cpuRandom");
+    const cpuIA = document.getElementById("cpuIA");
+    const divCpu = document.querySelector(".divComputer");
 
     let player1 = "";
 
@@ -60,7 +63,10 @@ const gameController = function(){
                 const p2NameTrimmed = p2NameInput.value.trim();
                 return {p1NameTrimmed, p2NameTrimmed, p1Mark, computerPlayer};
             } 
-            else if(computerPlayer) return {p1NameTrimmed, p1Mark, computerPlayer};
+            else if(computerPlayer && (cpuRandom.checked || cpuIA.checked)) {
+                const IAMode = cpuIA.checked;
+                return {p1NameTrimmed, p1Mark, computerPlayer, IAMode};
+            } 
             else return false;
         } else return false;
     }
@@ -72,6 +78,8 @@ const gameController = function(){
         p1MarkX.checked = false;
         cpuOptionNo.checked = false;
         cpuOptionYes.checked = false;
+        cpuIA.checked = false;
+        cpuRandom.checked = false;
     }
 
     function clearBoard(){
@@ -83,11 +91,21 @@ const gameController = function(){
     function definePlayers(obj){
         if(obj.computerPlayer){
             if(obj.p1Mark === 'X'){
-                player1 = playerFactory(1, "X", obj.p1NameTrimmed);
-                player2 = playerFactory(3, "O", "Computer");
+                if(obj.IAMode){
+                    player1 = playerFactory(1, "X", obj.p1NameTrimmed);
+                    player2 = playerFactory(4, "O", "Computer");
+                } else {
+                    player1 = playerFactory(1, "X", obj.p1NameTrimmed);
+                    player2 = playerFactory(3, "O", "Computer");
+                }
             } else {
-                player1 = playerFactory(1, "O", obj.p1NameTrimmed);
-                player2 = playerFactory(3, "X", "Computer");
+                if(obj.IAMode){
+                    player1 = playerFactory(1, "O", obj.p1NameTrimmed);
+                    player2 = playerFactory(4, "X", "Computer");
+                } else {
+                    player1 = playerFactory(1, "O", obj.p1NameTrimmed);
+                    player2 = playerFactory(3, "X", "Computer");
+                }
             }
         } else {
             if(obj.p1Mark === 'X'){
@@ -108,40 +126,102 @@ const gameController = function(){
             if(!(gameBoard.gameboardArray[i])) availableSpots.push(i);
         };
 
-        console.log(availableSpots);
-
         for(let i = 0; i < availableSpots.length; i++){
-            if(randomSpot === availableSpots[i]) {
-                console.log("inside the function: " + randomSpot);
-                return randomSpot;
+            if(randomSpot === availableSpots[i]) return randomSpot;
+            else if(i === availableSpots.length-1) return getRandomSpot();
+        }
+    }
+
+    function getSpotWithIA(player){
+        // Prioritize spots that make a win
+        // Prioritize blocks not to lose the match
+        // Prioritize moves in the corners and center
+        // 
+        const playerMark = player.getMark() === 'X' ? 'O' : 'X';
+        
+        let winArray = [
+            /* Horizontal */
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        
+            /* Vertical */
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+
+            /* Diagonal */
+            [0, 4, 8],
+            [6, 4, 2],
+        ]
+
+        // Check if can win
+
+        for(let i = 0; i < winArray.length; i++){
+            let counter = 0;
+            for(let j = 0; j < winArray[i].length; j++){
+                if(gameBoard.gameboardArray[winArray[i][j]] === player.getMark()) counter++;
+                if(counter === 2 && getWinSpot(i)) return getWinSpot(i);
+                if(j === 2) counter = 0;
             }
-            
-            else if(i === availableSpots.length-1){
-                return getRandomSpot();
-            } 
+        };
+
+        function getWinSpot(i){
+            for(let k = 0; k < winArray[i].length; k++){
+                if(!(gameBoard.gameboardArray[winArray[i][k]])) return winArray[i][k];
+                if(k === winArray[i].length - 1) return false;
+            };
+        }
+
+        // Check to prevent a defeat
+        
+        for(let i = 0; i < winArray.length; i++){
+            let counter = 0;
+            for(let j = 0; j < winArray[i].length; j++){
+                if(gameBoard.gameboardArray[winArray[i][j]] === playerMark) counter++;
+                if(counter === 2 && preventLose(i)) return preventLose(i);
+                if(j === 2) counter = 0;
+            }
+        };
+
+        function preventLose(i){
+            for(let k = 0; k < winArray[i].length; k++){
+                if(!(gameBoard.gameboardArray[winArray[i][k]])) return winArray[i][k];
+                if(k === winArray[i].length - 1) return false;
+            };
         }
     }
 
     function markBoard(player){
         let gameEnded = false;
 
-        if(player.getNumber() !== 3){
+        if(player.getNumber() !== 3 && player.getNumber() !== 4){
             gameBoard.gameboardArray[event.currentTarget.id] = player.getMark();
             gameBoard.playRecorder.push(player.getMark());
             event.currentTarget.textContent = gameBoard.gameboardArray[event.currentTarget.id];
             event.currentTarget.removeEventListener("click", startGame);
-        } else {
+        } else if(player.getNumber() === 3) {
             const randomSpot = getRandomSpot();
-            console.log(randomSpot);
             gameBoard.gameboardArray[randomSpot] = player.getMark();
             gameBoard.playRecorder.push(player.getMark());
             gameSpots.forEach(gameSpot => {
                 if(gameSpot.id == randomSpot) {
                     gameSpot.textContent = gameBoard.gameboardArray[randomSpot];
                     gameSpot.removeEventListener("click", startGame);
-                    console.log("Marked!");
                 }
             });
+        } else if(player.getNumber() === 4){
+            let IASpot = getSpotWithIA(player);
+            if(typeof IASpot == 'number'){
+                gameBoard.gameboardArray[IASpot] = player.getMark();
+                gameBoard.playRecorder.push(player.getMark());
+                gameSpots.forEach(gameSpot => {
+                    if(gameSpot.id == IASpot) {
+                        gameSpot.textContent = gameBoard.gameboardArray[IASpot];
+                        gameSpot.removeEventListener("click", startGame);
+                    }
+                });
+            } else console.log(IASpot);
         }
 
         if((gameBoard.playRecorder.length >= 3) && winOrLose(player)){
@@ -215,7 +295,7 @@ const gameController = function(){
             }
         }
 
-        if(player2.getNumber() === 3){
+        if(player2.getNumber() === 3 || player2.getNumber() === 4){
             if( gameBoard.playRecorder[gameBoard.playRecorder.length-1] === player2.getMark() ||
             gameBoard.playRecorder[gameBoard.playRecorder.length-1] === undefined){
                 if(!(markBoard(player1))) markBoard(player2);
@@ -236,10 +316,12 @@ const gameController = function(){
 
     cpuOptionYes.addEventListener("click", function(){
         divPlayer2.style.display = "none";
+        divCpu.style.display = "block";
     });
 
     cpuOptionNo.addEventListener("click", function(){
         divPlayer2.style.display = "block";
+        divCpu.style.display = "none";
     })
 
     buttonStart.addEventListener("click", function(event){
