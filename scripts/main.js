@@ -63,7 +63,7 @@ const gameController = function(){
                 const p2NameTrimmed = p2NameInput.value.trim();
                 return {p1NameTrimmed, p2NameTrimmed, p1Mark, computerPlayer};
             } 
-            else if(computerPlayer && (cpuRandom.checked || cpuIA.checked)) {
+            else if(computerPlayer /*&& (cpuRandom.checked || cpuIA.checked)*/) {
                 const IAMode = cpuIA.checked;
                 return {p1NameTrimmed, p1Mark, computerPlayer, IAMode};
             } 
@@ -316,12 +316,12 @@ const gameController = function(){
 
     cpuOptionYes.addEventListener("click", function(){
         divPlayer2.style.display = "none";
-        divCpu.style.display = "block";
+        //divCpu.style.display = "block";
     });
 
     cpuOptionNo.addEventListener("click", function(){
         divPlayer2.style.display = "block";
-        divCpu.style.display = "none";
+        //divCpu.style.display = "none";
     })
 
     buttonStart.addEventListener("click", function(event){
