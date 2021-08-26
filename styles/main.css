@@ -1,31 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    color: rgb(58, 58, 58);
 }
 
-.divComputer {
+body {
+    margin: 50px 0;
+}
+
+h1 {
+    font-weight: 400;
+    text-align: center;
+}
+
+
+fieldset {
+    border: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+fieldset div{
+    display: inline-block;
+    width: 20%;
+    border-bottom: 3px solid lightseagreen;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 5px;
+}
+
+legend {
+    flex-basis: 100%;
+}
+
+#p1NameLabel, #p2NameLabel, #p1Name, #p2Name, legend {
+    display: block;
+    width: 70%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+#p1Name, #p2Name {
+    border: 3px solid gray;
+    border-radius: 10px;
+    transition: all 0.3s;
+    padding: 10px;
+}
+
+#p1Name:focus, #p2Name:focus {
+    border: 3px solid rgb(73, 248, 239);
+    border-bottom: 3px solid lightseagreen;
+}
+
+.divComputer, .divPlayer2 {
     display: none;
 }
 
-.divPlayer2 {
-    display: none;
+#buttonStart {
+    background-color: darkslateblue;
+    color: white;
+    border: none;
+    border-bottom: 4px solid lightseagreen;
+    display: block;
+    width: 60%;
+    height: 50px;
+    margin: auto;
+    border-radius: 25px;
+    margin-top: 30px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+#buttonStart:hover {
+    cursor: pointer;
+    background-color: rgb(19, 0, 139);
 }
 
 .result {
+    background-color: lightseagreen;
     display: none;
     position: fixed;
-    left: 25%;
-    top: 25%;
-    width: 50%;
-    height: 70%;
+    left: 5vw;
+    top: 15vh;
+    width: 90vw;
+    height: 70vh;
     margin: auto;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 3px solid black;
+    border: 5px solid rgb(73, 248, 239);
+    border-radius: 20px;
     padding: 30px;
-    background-color: white;
+}
+
+.result p {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.result span {
+    font-weight: 500;
+    color: white;
+    position: relative;
+    z-index: 2;
+    padding: 10px;
+}
+
+.result span::after {
+    content: "";
+    background-color: darkslateblue;
+    position: absolute;
+    width: 85%;
+    height: 35%;
+    right: 7.5%;
+    top: 50%;
+    z-index: -1;
+}
+
+.result button {
+    background-color: darkslateblue;
+    color: white;
+    border: none;
+    width: 40%;
+    height: 50px;
+    border-radius: 25px;
+    margin-top: 30px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.result button:hover {
+    cursor: pointer;
+    background-color: rgb(19, 0, 139);
 }
 
 table {
@@ -35,9 +157,9 @@ table {
 }
 
 .gameSpot {
-    width: 150px;
-    height: 150px;
-    border: 1px solid black;
+    width: 30vw;
+    height: 30vw;
+    border: 5px solid lightseagreen;
     text-align: center;
 }
 
@@ -55,4 +177,42 @@ table tr:first-child td {
 
 table tr:last-child td {
     border-bottom: none;
+}
+
+@media (min-width: 600px){
+    .gameSpot{
+        width: 20vw;
+        height: 20vw;
+    }
+
+    #p1NameLabel, #p2NameLabel, #p1Name, #p2Name {
+        width: 30%;
+    }
+
+    fieldset {
+        width: 50%;
+        margin: auto;
+    }
+
+    fieldset div {
+        width: 15%;
+    }
+
+    #buttonStart {
+        width: 30%;
+    }
+}
+
+@media (min-width: 920px){
+    .gameSpot {
+        width: 10vw;
+        height: 10vw;
+    }
+
+    .result {
+        left: 25vw;
+        width: 50vw;
+        height: 50vh;
+        top: 25vh;
+    }
 }

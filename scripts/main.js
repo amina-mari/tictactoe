@@ -266,9 +266,11 @@ const gameController = function(){
 
     function winGame(player){
         if(player.getNumber() !== 3){
+            congratsPara.style.display = "block";
             resultPara.innerHTML = `Player ${player.getNumber()} (<span>${player.getName()}</span>) win!`;
             congratsPara.textContent = "Congratulations!";
-        } else {
+        } else {;
+            congratsPara.style.display = "none";
             resultPara.innerHTML = `<span>${player.getName()}</span> win!`;
         }
         resultDiv.style.display = "flex";

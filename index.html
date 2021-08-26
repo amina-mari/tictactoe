@@ -8,20 +8,28 @@
     <link rel="stylesheet" href="/styles/main.css">
 </head>
 <body>
-    <h2>Jogo da Velha</h2>
+    <h1>Tic Tac Toe</h1>
     <form action="">
-        <label for="p1Name">Player 1 Name:</label>
+        <label id="p1NameLabel" for="p1Name">Player 1 Name:</label>
         <input id="p1Name" type="text">
         <fieldset>
             <legend>Player 1 Mark:</legend>
-            <input type="radio" id="p1MarkX" name="p1Mark"> <label for="p1MarkX">X</label>
-            <input type="radio" id="p1MarkO" name="p1Mark"> <label for="p1MarkO">O</label>
+            <div>
+                <input type="radio" id="p1MarkX" name="p1Mark"> <label for="p1MarkX">X</label>
+            </div>
+            <div>
+                <input type="radio" id="p1MarkO" name="p1Mark"> <label for="p1MarkO">O</label>
+            </div>
         </fieldset>
         
         <fieldset>
             <legend>Play against the computer?</legend>
-            <input id="cpuOptionYes" type="radio" name="cpuOption"> <label for="cpuOptionYes">Yes</label>
-            <input id="cpuOptionNo" type="radio" name="cpuOption"> <label for="cpuOptionNo">No</label>
+            <div>
+                <input id="cpuOptionYes" type="radio" name="cpuOption"> <label for="cpuOptionYes">Yes</label>
+            </div>
+            <div>
+                <input id="cpuOptionNo" type="radio" name="cpuOption"> <label for="cpuOptionNo">No</label>
+            </div>
         </fieldset>
 
         <fieldset class="divComputer">
@@ -31,7 +39,7 @@
         </fieldset>
 
         <div class="divPlayer2">
-            <label for="p2Name">Player 2 Name:</label>
+            <label id="p2NameLabel" for="p2Name">Player 2 Name:</label>
             <input id="p2Name" type="text">
         </div>
 
