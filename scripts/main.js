@@ -269,7 +269,7 @@ const gameController = function(){
             congratsPara.style.display = "block";
             resultPara.innerHTML = `Player ${player.getNumber()} (<span>${player.getName()}</span>) win!`;
             congratsPara.textContent = "Congratulations!";
-        } else {;
+        } else {
             congratsPara.style.display = "none";
             resultPara.innerHTML = `<span>${player.getName()}</span> win!`;
         }
